@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Diary Zaky</title>
+    <!-- Google Fonts untuk pilihan gaya huruf -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Courier+Prime&family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4efe6;
+            --paper-color: #fffdf9;
+            --primary: #5c4033;
+            --accent: #8b5a2b;
+            --selected-font: 'Poppins', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Halaman Login */
+        #login-section {
+            background: var(--paper-color);
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 380px;
+            margin: auto;
+            text-align: center;
+        }
+
+        #login-section h2 { color: var(--primary); margin-bottom: 10px; }
+        #login-section p { font-size: 13px; color: #777; margin-bottom: 20px; }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #d3c5b4;
+            border-radius: 8px;
+            font-size: 15px;
+            background: #fff;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        button:hover { background-color: var(--accent); }
+
+        /* Halaman Utama Diary */
+        #app-section {
+            display: none;
+            width: 100%;
+            max-width: 750px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        header h1 { color: var(--primary); font-size: 24px; }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .controls select { margin-bottom: 0; width: auto; padding: 8px 12px; }
+        .btn-logout { background-color: #b03a2e; padding: 8px 15px; }
+
+        /* Area Menulis */
+        .editor-card {
+            background: var(--paper-color);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            margin-bottom: 30px;
+            border-left: 6px solid var(--primary);
+        }
+
+        .dynamic-font {
+            font-family: var(--selected-font) !important;
+        }
+
+        #diary-title { font-weight: bold; font-size: 18px; }
+        #diary-content { min-height: 140px; resize: vertical; line-height: 1.6; }
+
+        /* Daftar Catatan */
+        .entry-card {
+            background: var(--paper-color);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .entry-date { font-size: 12px; color: #888; margin-bottom: 5px; font-family: 'Poppins', sans-serif; }
+        .entry-title { font-size: 19px; color: var(--primary); margin-bottom: 8px; }
+        .entry-body { white-space: pre-wrap; line-height: 1.6; font-size: 16px; }
+        .btn-delete {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            color: #c0392b;
+            padding: 4px 8px;
+            font-size: 13px;
+        }
+        .btn-delete:hover { background: #fdecea; }
+    </style>
+</head>
+<body>
+
+    <!-- FORM LOGIN -->
+    <div id="login-section">
+        <h2>📖 Buku Diary Zaky</h2>
+        <p>Silakan masuk untuk melanjutkan</p>
+        <input type="text" id="username" placeholder="Masukkan Username">
+        <input type="password" id="password" placeholder="Masukkan Password">
+        <button onclick="login()" style="width: 100%;">Masuk</button>
+        <p id="login-error" style="color: red; margin-top: 10px;"></p>
+    </div>
+
+    <!-- APLIKASI DIARY -->
+    <div id="app-section">
+        <header>
+            <h1>📖 Catatan Harianku</h1>
+            <div class="controls">
+                <select id="font-selector" onchange="changeFont()">
+                    <option value="'Poppins', sans-serif">Font: Modern (Sans)</option>
+                    <option value="'Lora', serif">Font: Klasik (Serif)</option>
+                    <option value="'Caveat', cursive">Font: Tulisan Tangan</option>
+                    <option value="'Courier Prime', monospace">Font: Mesin Ketik</option>
+                </select>
+                <button class="btn-logout" onclick="logout()">Keluar</button>
+            </div>
+        </header>
+
+        <div class="editor-card">
+            <input type="text" id="diary-title" class="dynamic-font" placeholder="Judul hari ini...">
+            <textarea id="diary-content" class="dynamic-font" placeholder="Ceritakan harimu di sini..."></textarea>
+            <button onclick="saveDiary()">Simpan Catatan</button>
+        </div>
+
+        <div id="diary-list"></div>
+    </div>
+
+    <script>
+        // Cek status login saat halaman dimuat
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            showApp();
+        }
+
+        function login() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+
+            if (user === 'zaky' && pass === '120209') {
+                localStorage.setItem('isLoggedIn', 'true');
+                showApp();
+            } else {
+                document.getElementById('login-error').innerText = 'Username atau password salah!';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            location.reload();
+        }
+
+        function showApp() {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('app-section').style.display = 'block';
+            
+            const savedFont = localStorage.getItem('diaryFont');
+            if (savedFont) {
+                document.getElementById('font-selector').value = savedFont;
+                changeFont();
+            }
+            loadDiaries();
+        }
+
+        // Ganti Font secara Real-Time
+        function changeFont() {
+            const selectedFont = document.getElementById('font-selector').value;
+            document.documentElement.style.setProperty('--selected-font', selectedFont);
+            localStorage.setItem('diaryFont', selectedFont);
+        }
+
+        // Simpan Catatan
+        function saveDiary() {
+            const title = document.getElementById('diary-title').value.trim();
+            const content = document.getElementById('diary-content').value.trim();
+            const font = document.getElementById('font-selector').value;
+
+            if (!title || !content) {
+                alert('Judul dan isi catatan tidak boleh kosong!');
+                return;
+            }
+
+            const diaries = JSON.parse(localStorage.getItem('diaryList') || '[]');
+            const newEntry = {
+                id: Date.now(),
+                title: title,
+                content: content,
+                font: font,
+                date: new Date().toLocaleDateString('id-ID', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                })
+            };
+
+            diaries.unshift(newEntry);
+            localStorage.setItem('diaryList', JSON.stringify(diaries));
+
+            document.getElementById('diary-title').value = '';
+            document.getElementById('diary-content').value = '';
+            loadDiaries();
+        }
+
+        // Muat Catatan
+        function loadDiaries() {
+            const diaries = JSON.parse(localStorage.getItem('diaryList') || '[]');
+            const listContainer = document.getElementById('diary-list');
+            listContainer.innerHTML = '';
+
+            diaries.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'entry-card';
+                card.innerHTML = `
+                    <div class="entry-date">${item.date}</div>
+                    <h3 class="entry-title" style="font-family: ${item.font}">${escapeHTML(item.title)}</h3>
+                    <p class="entry-body" style="font-family: ${item.font}">${escapeHTML(item.content)}</p>
+                    <button class="btn-delete" onclick="deleteDiary(${item.id})">Hapus</button>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        // Hapus Catatan
+        function deleteDiary(id) {
+            if (confirm('Yakin ingin menghapus catatan ini?')) {
+                let diaries = JSON.parse(localStorage.getItem('diaryList') || '[]');
+                diaries = diaries.filter(item => item.id !== id);
+                localStorage.setItem('diaryList', JSON.stringify(diaries));
+                loadDiaries();
+            }
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag]));
+        }
+    </script>
+</body>
+</html>
